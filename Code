@@ -1,0 +1,253 @@
+// JAVA CODE
+
+Package com.example.admin.augscan; 
+import android.content.Intent; 
+importandroid.support.v7.app.AppCompatActvity; 
+import android.os.Bundle; 
+import android.view.View; 
+import com.google.firebase.auth.FirebaseAuth; 
+import com.google.firebase.auth.FirebaseUser; 
+public class MainActivity extends 
+AppCompatActivity { private FirebaseAuth auth; 
+
+@Override 
+protected void onCreate(Bundle 
+savedInstanceState) { 
+super.onCreate(savedInstanceState); 
+setContentView(R.layout.activity_main); 
+auth = FirebaseAuth.getInstance(); 
+FirebaseUser user = auth.getCurrentUser(); if(user != 
+null){ finish(); 
+startActivity(new Intent(this, dashboardActivity.class)); 
+}
+} 
+public void login (View view) 
+{ 
+startActivity(new Intent(this,LoginActivity.class)); 
+} 
+public void register (View view) 
+{ 
+startActivity(new Intent(this,RegisterActivity.class)); 
+} 
+} 
+
+//Register 
+
+packagecom.example.admin.augscan; 
+import android.content.Intent; 
+import android.support.annotation.NonNull; 
+importandroid.support.v7.app.AppCompatActivity; 
+import android.os.Bundle; 
+import android.text.TextUtils;
+import android.util.Log; 
+import android.util.Pattern; 
+importandroid.view.View; 
+import android.widget.Button; 
+import android.widget.EditText; 
+import android.widget.ProgressBar; import android.widget.Toast; 
+import com.google.android.gms.tasks.OnCompleteListener; 
+import com.google.android.gms.tasks.Task; 
+import com.google.firebase.auth.AuthResult; 
+import com.google.firebase.auth.FirebaseAuth; 
+import com.google.firebase.auth.FirebaseUser; 
+importcom.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.FirebaseDatabase; 
+public class RegisterActivity extends AppCompatActivity
+{ 
+private EditText editTextName, editTextEmail, editTextPassword, 
+editTextPhone,editTextcPassword; public Button UserRegisterBtn; 
+privateProgressBarprogressBar; 
+privateFirebaseAutmAuth; 
+
+@Override
+
+protected void onCreate(Bundle savedInstanceState{ 
+super.onCreate(savedInstanceState); 
+setContentView(R.layout.activity_register); 
+editTextName =findViewById(R.id.departmentName); 
+editTextEmail = findViewById(R.id.emailRegister); 
+editTextPassword=findViewById(R.id.passwordRegistr; 
+editTextcPassword=findViewById(R.id.confirmPasswd);
+ UserRegisterBtn= findViewById(R.id.button_register); 
+progressBar = findViewById(R.id.progressbar); 
+progressBar.setVisibility(View.GONE); 
+mAuth = FirebaseAuth.getInstance() 
+UserRegisterBtn.setOnClickListener(newView.OnClickListen) { 
+@Override 
+public void onClick(View v) { registerUser(); 
+}); 
+} 
+@Override 
+protected void onStart() { super.onStart(); if 
+(mAuth.getCurrentUser() != null) { 
+} 
+} 
+private void registerUser() { 
+finalStringname=editTextName.getText().toString().trim(); 
+final String email = editTextEmail.getText().toString(); 
+Stringpassword= editTextPassword.getText().toString().trim(); 
+Stringcpassword=editTextcPassword.getText().toString().trim(); 
+if (email.isEmpty()) { editTextEmail.setError("It's empty"); 
+editTextEmail.requestFocus(); 
+return; 
+}
+if(name.isEmpty()){ 
+editTextName.setError("It's Empty"); 
+editTextName.requestFocus(); return; } 
+if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()
+ ) { editTextEmail.setError("Not a valid emailaddress"); 
+editTextEmail.requestFocus(); return; 
+if (password.isEmpty()){ 
+editTextPassword.setError("Itsempty"
+ ); 
+editTextPassword.requestFocus(); 
+return; 
+} 
+if  
+} 
+(password.length() < 6) { 
+editTextPassword.setError("Less 
+length"); 
+editTextPassword.requestFocus(); 
+return; 
+if(!password.equals(cpassword)){ 
+editTextcPassword.setError("PasswordDonotMatch"); 
+editTextcPassword.requestFocus(); 
+return;
+} 
+progressBar.setVisibility(View.VISIBLE); 
+mAuth.createUserWithEmailAndPassword(email, password) 
+.addOnCompleteListener(new OnCompleteListener<AuthResult>() { 
+@Override 
+public onComplete(@NonNull 
+Task<AuthResult> task) { 
+if (task.isSuccessful()) { 
+User user = new User( name,email); 
+); 
+FirebaseUser usernameinfirebase = 
+mAuth.getCurrentUser(); String 
+UserID=usernameinfirebase.getEmail(); 
+String resultemail = UserID.replace(".",""); 
+FirebaseDatabase.getInstance().getReference("Users") 
+.child(resultemail).child("UserDetails") 
+.setValue(user).addOnCompleteListener(new 
+OnCompleteListener<Void>() { @Override public void
+ Task<Void> task) 
+onComplete(@NonNull 
+progressBar.setVisibility(View.GONE); 
+(task.isSuccessful()) { 
+{ 
+if 
+Toast.makeText(RegisterActivity.this, "Registration Success", 
+Toast.LENGTH_LONG).show(); startActivity(new 
+Intent(RegisterActivity.this,dashboardActivity.class)); 
+} else { 
+//display a failure message 
+} 
+} 
+}); 
+} else { progressBar.setVisibility(View.GONE); 
+Toast.makeText(RegisterActivity.this, "Registration 
+Failed", Toast.LENGTH_LONG).show(); 
+} 
+} 
+}); 
+} 
+} 
+} 
+// Login package 
+com.example.admin.auan; 
+importandroid.app.ProgressDialog
+ ; import android.content.Intent; 
+importandroid.support.annotation.
+ NonNull;
+importandroid.support.v7.app.AppCompatActivi
+ ty; import android.os.Bundle; 
+import android.view.View; 
+importandroid.widget.Button; 
+importandroid.widget.EditText 
+importandroid.widget.Progresar; 
+importandroid.widget.TextView 
+import android.widget.Toast; 
+importcom.google.android.gms.tasks.OnCompleteListen
+ er; import com.google.android.gms.tasks.Task; 
+importcom.google.firebase.auth.AuthResult
+ importcom.google.firebase.auth.Firebasth; 
+importcom.google.firebase.auth.Firebaseer; 
+public class LoginActivity extends AppCompatActivity { private EditText Email; private 
+EditText Password; 
+private Button Login; 
+private TextView passwordreset; 
+private EditText 
+passwordresetemail; private 
+ProgressBar progressBar; private 
+FirebaseAuth auth; 
+private ProgressDialog processDialog;
+@Override protected void onCreate(Bundle 
+savedInstanceState) { 
+super.onCreate(savedInstanceState); 
+setContentView(R.layout.activity_login); 
+Email = (EditText) findViewById(R.id.emailSignIn); 
+Password = (EditText) 
+findViewById(R.id.password); Login = (Button) 
+findViewById(R.id.Login); passwordreset = 
+findViewById(R.id.forgotpassword); 
+passwordresetemail = 
+findViewById(R.id.emailSignIn); 
+progressBar = (ProgressBar) 
+findViewById(R.id.progressbars); 
+progressBar.setVisibility(View.GONE);auth = 
+FirebaseAuth.getInstance(); processDialog = new 
+ProgressDialog(this); 
+Login.setOnClickListener(new View.OnClickListener() { 
+@Override  
+publicvoidonClick(View,view){ 
+validate(Email.getText().toString(), 
+Password.getText().toString()); 
+}
+}); 
+}); 
+@Override public 
+void onClick(View 
+v) { 
+resetpasword(); 
+} 
+} 
+public void resetpasword(){ 
+final String resetemail = 
+passwordresetemail.getText().toString(); if 
+(resetemail.isEmpty()) { passwordresetemail.setError("It's 
+empty"); passwordresetemail.requestFocus();return; 
+} 
+progressBar.setVisibility(View.VISIBLE); auth.sendPasswordResetEmail(resetemail) 
+.addOnCompleteListener(new 
+OnCompleteListener<Void>() { @Override public void 
+onComplete( 
+@NonNull Task<Void> task) { if (task.isSuccessful()) { 
+Toast.makeText(LoginActivity.this, "We have sent you instructions to reset 
+your password!", Toast.LENGTH_SHORT).show(); 
+} else { 
+Toast.makeText(LoginActivity.this,"Failed to send reset email!", Toast. 
+LENGTH_ SHORT) .show(); 
+} 
+progressBar.setVisibility(View.GONE); 
+} 
+}); 
+Public void validate(String   userEmail, String userPassword){ process Dialog
+ .setMessage ("................Please Wait "); 
+processDialog.show(); 
+auth.signInWithEmailAndPassword(userEmail, 
+userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() { 
+@Override 
+public void onComplete(@NonNull Task<AuthResult> 
+task) { if(task.isSuccessful()){ 
+processDialog.dismiss(); 
+Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show(); 
+startActivity(new Intent(LoginActivity.this, dashboardActivity.class)); } 
+else{ 
+Toast.makeText(LoginActivity.this,"LoginFailed",Toast.LENGTH_SHORT).show(); 
+processDialo .dismiss(); } 
+} 
+}); 
+} 
+} 
